@@ -63,7 +63,7 @@ class Kmeans_anchor:
         return clusters
 
     def result2txt(self, data):
-        f = open("yolo_anchors.txt", 'w')
+        f = open("./model_data/yolo_anchors.txt", 'w')
         row = np.shape(data)[0]
         for i in range(row):
             if i == 0:
