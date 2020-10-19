@@ -33,16 +33,16 @@ K.get_session()
 #model_data/coco_classes.txt
 class YOLO(object):
     _defaults = {
-        "model_path": 'model_data/yolo_weights.h5',
+        "model_path": 'trained_weights/yolo_weights_test1.h5',
         "anchors_path": 'model_data/yolo_anchors.txt',
         "classes_path": 'model_data/class.txt',
         ########## decrease the "score" to get more objects ##########       
-        "score" : 0.16,
+        "score" : 0.2,
         "iou" : 0.45,
         "gpu_num" : 1,
         "test" : 1,
         ########## "model_image_size" should be as same as training process ##########   
-        "model_image_size" : (416, 416),
+        "model_image_size" : (640,640),
     }
 
     @classmethod
@@ -108,17 +108,17 @@ class YOLO(object):
 
         # Generate output tensor targets for filtered bounding boxes.
         self.input_image_shape = K.placeholder(shape=(2, ))
-        print(self.gpu_num)
-        print(self.iou)
-        print(self.score)
-        print(self.test)
+        print("GPU_num : ", self.gpu_num)
+        print("IOU : ", self.iou)
+        print("Score : ", self.score)
+        print("Test : ", self.test)
         ###
         if self.test >= 2:
             self.yolo_model = multi_gpu_model(self.yolo_model, gpus = self.test)
     
         boxes, scores, classes = yolo_eval(self.yolo_model.output, self.anchors,
-                len(self.class_names), self.input_image_shape,
-                score_threshold = self.score, iou_threshold = self.iou)
+                                           len(self.class_names), self.input_image_shape,
+                                           score_threshold = self.score, iou_threshold = self.iou)
         return boxes, scores, classes
 
     def detect_image(self, image):
@@ -181,14 +181,10 @@ class YOLO(object):
 
             # My kingdom for a good redistributable image drawing library.
             for i in range(thickness):
-                draw.rectangle(
-                    [left + i, top + i, right - i, bottom - i],
-                    outline = self.colors[c])
+                draw.rectangle([left + i, top + i, right - i, bottom - i], outline = self.colors[c])
                 
-            draw.rectangle(
-                [tuple(text_origin), tuple(text_origin + label_size)],
-                fill = self.colors[c])
-			
+            draw.rectangle([tuple(text_origin), tuple(text_origin + label_size)], fill = self.colors[c])
+            
             draw.text(text_origin, label, fill=(0, 0, 0), font=font)
             del draw
 
